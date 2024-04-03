@@ -127,7 +127,7 @@ import Footer from "./Footer";
 ......
 const App = () => {
   ......
-  const [theme] = useState<string>("basic");
+  const [theme] = useState("basic");
   return (
     <div className="container">
       <h2>Hello {msg}!</h2>
