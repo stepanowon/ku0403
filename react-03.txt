@@ -1,13 +1,23 @@
+* slide-03
+npm init vite helloapp -- --template react-swc
+cd helloapp
+npm install
+
+
 * slide-04
 
+import React from "react";
+
 const App = () => {
-  let msg = "World";
   return (
     <div>
-      <h2>Hello {msg}!</h2>
+      <h2>Hello World!</h2>
     </div>
   );
 };
+
+export default App;
+
 
 * slide-05
 
@@ -19,6 +29,8 @@ const App = () => {
     </div>
   );
 };
+
+
 
 * slide-06
 import React from "react";
@@ -58,7 +70,7 @@ npm install bootstrap@5
 import 'bootstrap/dist/css/bootstrap.css'
 import './index.css'
 ......
-------------------------
+------------------------------------------------------------
 ......
 <div className="card card-body bg-light mb-3">{x} + {y} = {x+y}</div>
 ......
@@ -69,13 +81,6 @@ import './index.css'
 </div>
 ......
 
-
-* slide-11
-let a = (
-    <div id="container">
-        <h1 className="test main">Hello World</h1>
-    </div>
-)
 
 
 * slide-16
@@ -189,7 +194,7 @@ const CountryList = (props) => {
 export default CountryList;
 
 
-* slide-23
+* slide-25
 import React from "react";
 
 const CountryItem = (props) => {
@@ -204,7 +209,27 @@ const CountryItem = (props) => {
 export default CountryItem;
 
 
-* slide-30
+
+* slide-26
+
+import React from "react";
+import CountryItem from "./CountryItem";
+
+const CountryList = (props) => {
+  const list = props.countries;
+  let countries = list.map((item, index) => {
+    return <CountryItem key={item.no} countryitem={item} />;
+  });
+
+  return <ul className="list-group">{countries}</ul>;
+};
+
+export default CountryList;
+
+
+
+
+* slide-31
 
 import React, { useState } from "react";
 import CountryList from "./CountryList";
