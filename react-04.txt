@@ -1,0 +1,818 @@
+* slide-03
+const styles = {
+    color:"yellow", backgroundColor:"purple"
+}
+
+<div style={styles}>Hello</div>
+
+
+* slide-04
+const styles = {
+    listItemStyle : {
+       fontStyle:"italic", textDecoration:"underline"
+    },
+    dashStyle: {
+       backgroundColor: "#fff",
+       borderTop: "2px dashed gray"
+    }
+}
+export default styles;
+
+
+* slide-05
+......
+import styles from "./styles";
+......
+const App = () => {
+  ......
+  return (
+    <div className="container">
+      <h2>Hello {msg}!</h2>
+      <hr style={styles.dashStyle} />
+      {addResult(4, 3)}
+      <CountryList countries={list} />
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-06
+......
+import styles from "./styles";
+......
+
+const CountryItem = (props) => {
+  let item = props.countryitem;
+  return (
+    <li style={styles.listItemStyle} 
+       className={item.visited ? "list-group-item active" : "list-group-item"}>
+       {item.country}
+    </li>
+  );
+};
+
+export default CountryItem;
+
+
+* slide-09
+.test { color:blue; background-color: bisque; }
+--------------------------
+
+......
+import AppCssModule from "./App.module.css";
+......
+
+const App = () => {
+  ......
+  return (
+    <div className="container">
+      <h2 className={AppCssModule.test}>Hello {msg}!</h2>
+      <hr style={styles.dashStyle} />
+      {addResult(4, 3)}
+      <CountryList countries={list} />
+    </div>
+  );
+};
+
+export default App;
+
+
+
+* slide-11
+npm install styled-components
+
+* slide-12
+import styled  from 'styled-components';
+......
+
+//리턴값은 color:grey 스타일이 지정된 컴포넌트
+const Button = styled.button`
+  color: grey;
+`;
+
+//${} 내부에 작성한 함수가 리턴하는 값을 포함하여 스타일을 지정함
+//Title 컴포넌트로 color 속성을 전달 --> color 가 지정된 스타일을 가지는 h1 을 렌더링함
+const Title = styled.h1`
+  font-size: 1.5em;
+  text-align: center;
+  color: ${ ({ color })=> color };
+`;
+
+
+* slide-14
+import styled from "styled-components";
+
+type FooterPropsType = {
+  theme: string;
+};
+
+const Footer = styled.div<FooterPropsType>`
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    background-color: ${(props) => (props.theme === "basic" ? "skyblue" : "yellow")};
+    text-align: center;
+`;
+
+export default Footer;
+
+
+* slide-15
+......
+import Footer from "./Footer";
+......
+const App = () => {
+  ......
+  const [theme] = useState<string>("basic");
+  return (
+    <div className="container">
+      <h2>Hello {msg}!</h2>
+      <hr style={styles.dashStyle} />
+      {addResult(4, 3)}
+      <CountryList countries={list} />
+      <Footer theme={theme}>styled-components test</Footer>
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-19
+npm create vite proptypes-test -- --template react-swc
+cd proptypes-test
+npm install
+
+
+* slide-20
+import React from "react";
+
+const Calc = (props) => {
+  let result: number = 0;
+  switch (props.oper) {
+    case "+":
+      result = props.x + props.y;
+      break;
+    case "*":
+      result = props.x * props.y;
+      break;
+    default:
+      result = 0;
+  }
+  return (
+    <div>
+      <h3>연산 방식 : {props.oper}</h3>
+      <hr />
+      <div>
+        {props.x} {props.oper} {props.y} = {result}
+      </div>
+    </div>
+  );
+};
+
+export default Calc;
+
+
+* slide-21
+import React, { useState } from "react";
+import Calc from "./Calc";
+
+const App = () => {
+  const [x, setX] = useState(100);
+  const [y, setY] = useState (200);
+  const [oper, setOper] = useState("+");
+
+  return (
+    <div>
+      <Calc x={x} y={y} oper={oper} />
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-22
+import React from "react";
+import PropTypes from "prop-types";
+
+......(생략-기존 컴포넌트 코드는 그대로)
+const calcChecker = (props, propName, componentName) => {
+  if (propName === "oper") {
+    if (props[propName] !== "+" && props[propName] !== "*") {
+      return new Error(`${propName}속성의 값은
+        반드시 '+', '*'만 허용합니다(at ${componentName}).`);
+    }
+  }
+};
+
+Calc.propTypes = {
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  oper: calcChecker,
+};
+
+export default Calc;
+
+
+* slide-23
+import React, { useState } from "react";
+import Calc from "./Calc";
+
+const App = () => {
+  const [x, setX] = useState(101);
+  const [y, setY] = useState("ab");
+  const [oper, setOper] = useState("&");
+
+  return (
+    <div>
+      <Calc x={x} y={y} oper={oper} />
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-26
+PropTypes.shape({ 
+    name: PropTypes.string.isRequired,
+    age: PropTypes.number
+})
+
+
+const calcChecker = (props, propName, componentName) => {
+  if (propName === "oper") {
+    if (props[propName] !== "+" && props[propName] !== "*") {
+      return new Error(`${propName}속성의 값은
+        반드시 '+', '*'만 허용합니다(at ${componentName}).`);
+    }
+  }
+};
+
+Calc.propTypes = {
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  oper: calcChecker,
+};
+
+
+* slide-27
+const calcChecker = (props, propName, componentName) => {
+  if (propName === "oper") {
+    if (props[propName] !== "+" && props[propName] !== "*") {
+      return new Error(`${propName}속성의 값은 반드시 '+', '*'만 허용합니다(at ${componentName}).`);
+    }
+  }
+  if (propName === "y") {
+    let y = props[propName];
+    if (y > 100 || y < 0 || y % 2 !== 0) {
+      return new Error(`${propName}속성의 값은 0이상 100이하의 짝수만 허용합니다.(at ${componentName}).`);
+    }
+  }
+};
+
+Calc.propTypes = {
+  x: PropTypes.number.isRequired,
+  y: calcChecker,
+  oper: calcChecker,
+};
+
+
+* slide-28
+import { useSate } from  'react'
+import Calc from './Calc'
+
+const App = () => {
+  const [x, setX] = useState(100);
+  const [y, setY] = useState(200);
+  const [oper, setOper] = useState("+");
+  
+  return (
+    <div>
+      <Calc x={x} y={y} oper={oper} />
+    </div>
+  )
+}
+
+export default App;
+
+
+* slide-29
+......
+Calc.propTypes = {
+  x: PropTypes.number,
+  y: calcChecker,
+  oper: calcChecker,
+};
+
+Calc.defaultProps = {
+  x: 100,
+  y: 20,
+  oper: "+",
+};
+
+export default Calc;
+----------------------------------
+import React, { useState } from "react";
+import Calc from "./Calc";
+
+const App = () => {
+  const [x, setX] = useState (101);
+  // const [y, setY] = useState (203);
+  // const [oper, setOper] = useState ("&");
+
+  return (
+    <div>
+      <Calc x={x} />
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-33
+npm create vite events-test -- --template react-swc
+cd events-test
+npm install
+-----------------------
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App1";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+
+* slide-34
+
+import React, { useState } from "react";
+
+const App = () => {
+  const [count, setCount] = useState(0);
+  const increment = () => {
+    setCount(count + 1);
+  };
+  const decrement = () => {
+    setCount(count - 1);
+  };
+  return (
+    <div style={{ margin: "5px" }}>
+      <h3>이벤트 기초</h3>
+      <div>
+        <button onClick={increment}>증가</button>
+        <button onClick={decrement}>감소</button>
+      </div>
+      <div>
+         카운트 : <input type="text" value={count} />      
+      </div>
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-37
+
+  const increment = () => {
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+  };
+
+
+
+* slide-39
+const increment = () => {
+    setCount((count) => count + 1);
+    setCount((count) => count + 1);
+    setCount((count) => count + 1);
+};
+
+
+* slide-41
+import React, { useState } from "react";
+
+const App2 = () => {
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+
+  return (
+    <div>
+      <h3>제어 컴포넌트</h3>
+      X : <input type="text" value={x} />
+      <br />
+      Y : <input type="text" value={y} />
+      <br />
+      결과 : <span>{x + y}</span>
+    </div>
+  );
+};
+
+export default App2;
+------------------------------
+import React from "react";
+import ReactDOM from "react-dom/client";
+//import App from "./App1";
+import App from "./App2";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+
+
+* slide-44
+import React, { useState } from "react";
+
+const App2 = () => {
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+
+  const changeValue = (e) => {
+    let newValue = parseInt(e.target.value);
+    if (isNaN(newValue)) newValue = 0;
+    if (e.target.id === "x") setX(newValue);
+    else setY(newValue);
+  };
+
+  return (
+    <div>
+      <h3>제어 컴포넌트</h3>
+      X : <input id="x" type="text" value={x} onChange={changeValue} />
+      <br />
+      Y : <input id="y" type="text" value={y} onChange={changeValue} />
+      <br />
+      결과 : <span>{x + y}</span>
+    </div>
+  );
+};
+
+export default App2;
+
+
+* slide-46
+import React, { useRef, useState } from "react";
+
+const App3 = (props) => {
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const [result, setResult] = useState<number>(0);
+
+  const elemX = useRef (null);
+  const elemY = useRef (null);
+
+  const add = () => {
+  let x1: number = 
+     parseInt(elemX.current ? elemX.current.value : "", 10);
+  let y1: number = 
+     parseInt(elemY.current ? elemY.current.value : "", 10);    
+  if (isNaN(x1)) x1 = 0;
+    if (isNaN(y1)) y1= 0;
+    setX(x1);
+    setY(y1);
+    setResult(x1 + y1);
+  };
+
+  return (
+    <div className="container">
+      X : <input id="x" type="text" defaultValue={x} ref={elemX} />
+      <br />
+      Y : <input id="y" type="text" defaultValue={y} ref={elemY} />
+      <br />
+      <button onClick={add}>덧셈 계산</button>
+      <br />
+      결과 : <span>{result}</span>
+    </div>
+  );
+};
+
+export default App3;
+
+
+* slide-55
+
+//immer 9버전용
+import produce from "immer"
+//immer 10버전은 다음과 같이
+import { produce } from "immer"
+
+const currentState = [
+    {  todo: "Learn es6",  done: true   },
+    {  todo: "Try immer",   done: false  }
+]
+
+const nextState = produce(currentState, (draft) => {
+    draft[1].done = true
+})
+
+
+
+* slide-56
+
+let quiz = {
+    "students" : ["홍길동", "성춘향", "박문수", "변학도" ],
+    "quizlist": [
+      {
+        "question": "한국 프로야구 팀이 아닌것은?",
+        "options": [
+            { "no":1, "option":"삼성라이온스" },
+            { "no":2, "option":"기아타이거스" },
+            { "no":3, "option":"두산베어스" },
+            { "no":4, "option":"LA다져스" }
+        ],
+        "answer": 4
+      },
+      {
+        "question": "2018년 크리스마스는 무슨 요일인가?",
+        "options": [
+            { "no":1, "option":"월" },
+            { "no":2, "option":"화" },
+            { "no":3, "option":"수" },
+            { "no":4, "option":"목" }
+        ],
+        "answer": 2
+      }
+    ]
+}
+
+
+
+* slide-57
+......
+import { produce } from "immer";
+......
+let quiz = {  ......  };
+
+const quiz2 = produce(quiz, draft => {
+  draft.quizlist[0].options[0].option = "LG트윈스";
+});
+
+console.log(quiz.quizlist[0].options[0].option);
+
+//false, false, false, false, false, true 
+console.log(quiz === quiz2) 
+console.log(quiz.quizlist === quiz2.quizlist)
+console.log(quiz.quizlist[0] === quiz2.quizlist[0])
+console.log(quiz.quizlist[0].options[0] === quiz2.quizlist[0].options[0])
+console.log(quiz.quizlist[0].options[0].option === quiz2.quizlist[0].options[0].option)
+console.log(quiz.students === quiz2.students)
+
+
+
+
+* slide-66
+
+//TodoList App의 상태 데이터
+//---> 할 일 목록 데이터 : todoList
+[
+   { no: 1, todo: "React학습1", done: false },
+   { no: 2, todo: "React학습2", done: false },
+   { no: 3, todo: "React학습3", done: true },
+   { no: 4, todo: "React학습4", done: false },
+);
+
+
+* slide-68
+npm create vite todolist-app -- --template react-swc
+cd todolist-app
+npm install
+npm install  immer  bootstrap@5
+
+
+* slide-69
+
+import { produce } from "immer";
+import React, { useState } from "react";
+import App from "./components/App";
+
+const AppContainer = () => {
+  const [todoList, setTodoList] = useState([
+    { no: 1, todo: "React학습1", done: false },
+    { no: 2, todo: "React학습2", done: false },
+    { no: 3, todo: "React학습3", done: true },
+    { no: 4, todo: "React학습4", done: false },
+  ]);
+
+  const addTodo = (todo) => {
+    let newTodoList = produce(todoList, (draft) => {
+      draft.push({ no: new Date().getTime(), todo: todo, done: false });
+    });
+    setTodoList(newTodoList);
+  };
+
+  const deleteTodo = (no) => {
+    let index = todoList.findIndex((todo) => todo.no === no);
+    let newTodoList = produce(todoList, (draft) => {
+      draft.splice(index, 1);
+    });
+    setTodoList(newTodoList);
+  };
+
+  const toggleDone = (no) => {
+    let index = todoList.findIndex((todo) => todo.no === no);
+    let newTodoList = produce(todoList, (draft) => {
+      draft[index].done = !draft[index].done;
+    });
+    setTodoList(newTodoList);
+  };
+
+  return <App todoList={todoList} 
+              addTodo={addTodo} 
+              deleteTodo={deleteTodo} 
+              toggleDone={toggleDone} />;
+};
+
+export default AppContainer;
+
+
+* slide-70
+
+import React from "react";
+import InputTodo from "./InputTodo";
+import TodoList from "./TodoList";
+
+const App = (props) => {
+  return (
+    <div className="container">
+      <div className="card card-body bg-light">
+        <div className="title">:: Todolist App</div>
+      </div>
+      <div className="card card-default card-borderless">
+        <div className="card-body">
+          <InputTodo addTodo={props.addTodo} />
+          <TodoList todoList={props.todoList} toggleDone={props.toggleDone} deleteTodo={props.deleteTodo} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+App.propTypes = {
+    todoList : PropTypes.arrayOf(PropTypes.object).isRequired,
+    addTodo : PropTypes.func.isRequired,
+    deleteTodo : PropTypes.func.isRequired,
+    toggleDone : PropTypes.func.isRequired,
+};
+export default App;
+
+
+* slide-71
+import React, { useState } from "react";
+
+const InputTodo = (props) => {
+  const [todo, setTodo] = useState("");
+
+  const addHandler = () => {
+    props.addTodo(todo);
+    setTodo("");
+  };
+
+  const enterInput = (e) => {
+    if (e.key === "Enter") {
+      addHandler();
+    }
+  };
+
+  const changeTodo = (e) => {
+    setTodo(e.target.value);
+  };
+
+  return (
+    <div className="row">
+      <div className="col">
+        <div className="input-group">
+          <input
+            id="msg"
+            type="text"
+            className="form-control"
+            name="msg"
+            placeholder="할일을 여기에 입력!"
+            value={todo}
+            onChange={changeTodo}
+            onKeyUp={enterInput}
+          />
+          <span className="btn btn-primary input-group-addon" 
+             onClick={addHandler}>
+            추가
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+InputTodo.propTypes = {
+    addTodo : PropTypes.func.isRequired,
+};
+export default InputTodo;
+
+
+* slide-72
+import React, { useState } from "react";
+import { TodoListItemType } from "../AppContainer";
+
+const TodoList = (props) => {
+  let items = props.todoList.map((item) => {
+    return <TodoListItem key={item.no} todoItem={item} deleteTodo={props.deleteTodo} toggleDone={props.toggleDone} />;
+  });
+
+  return (
+    <div className="row">
+      {" "}
+      <div className="col">
+        <ul className="list-group">{items}</ul>
+      </div>
+    </div>
+  );
+};
+
+TodoList.propTypes = {
+    todoList : PropTypes.arrayOf(PropTypes.object).isRequired,
+    deleteTodo : PropTypes.func.isRequired,
+    toggleDone : PropTypes.func.isRequired,
+};
+export default TodoList;
+
+
+* slide-73
+import React from "react";
+import { TodoListItemType } from "../AppContainer";
+
+const TodoListItem = (props) => {
+  let itemClassName = "list-group-item";
+  if (props.todoItem.done) itemClassName += " list-group-item-success";
+
+  return (
+    <li className={itemClassName}>
+      <span className={props.todoItem.done ? "todo-done pointer" : "pointer"} onClick={() => props.toggleDone(props.todoItem.no)}>
+        {props.todoItem.todo}
+        {props.todoItem.done ? " (완료)" : ""}
+      </span>
+      <span className="float-end badge bg-secondary pointer" onClick={() => props.deleteTodo(props.todoItem.no)}>
+        삭제
+      </span>
+    </li>
+  );
+};
+
+TodoListItem.propTypes = {
+    todoItem : PropTypes.object.isRequired,
+    deleteTodo : PropTypes.func.isRequired,
+    toggleDone : PropTypes.func.isRequired,
+};
+
+export default TodoListItem;
+
+
+* slide-74
+body { margin: 0; padding: 0; font-family: sans-serif; }
+.title { text-align: center; font-weight:bold; font-size:20pt; }
+.todo-done { text-decoration: line-through; }
+.container { padding:10px 10px 10px 10px; }
+.panel-borderless { border: 0; box-shadow: none; }
+.pointer { cursor:pointer; }
+----------------------------------------
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import AppContainer from "./AppContainer";
+import "bootstrap/dist/css/bootstrap.css";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <AppContainer />
+  </React.StrictMode>
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,381 @@
+* slide-01
+npm init vite hook-test-app -- --template react-swc
+cd hook-test-app
+npm install
+
+
+* slide-02
+import { useState } from "react";
+
+const App01 = () => {
+  const [msg, setMsg] = useState("");
+
+  return (
+    <div>
+      <input type="text" value={msg} onChange={(e) => setMsg(e.target.value)} />
+      <br />
+      <span>입력 메시지 : {msg}</span>
+    </div>
+  );
+};
+
+export default App01;
+
+
+* slide-03
+import { useEffect, useState } from "react";
+
+const App02 = () => {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState("아이유");
+
+  useEffect(() => {
+    console.log(`${name} 님이 ${count}번 클릭했습니다`);
+  });
+
+  return (
+    <div>
+      이름 변경 :
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} /><hr />
+      <button onClick={() => setCount(count + 1)}>카운트 1 증가</button>
+      <p>{name} 님이 {count}번 클릭했습니다.</p>
+    </div>
+  );
+};
+
+export default App02;
+
+
+* slide-05
+
+  useEffect(() => {
+    console.log(`${name} 님이 ${count}번 클릭했습니다`);
+  }, [ count ]);
+
+
+* slide-06
+
+  useEffect(() => {
+    console.log(`${name} 님이 ${count}번 클릭했습니다`);
+  }, []);
+
+
+
+* slide-08
+
+import React, { useEffect, useState } from "react";
+import DateAndTime from "date-and-time";
+
+const Clock2 = (props) => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  useEffect(() => {
+    console.log("### Clock component is mounted!!");
+    let handle = setInterval(() => {
+      setCurrentTime(new Date());
+      console.log("### Tick");
+    }, 1000);
+    return () => {
+      clearInterval(handle);
+    };
+  }, []);
+
+  return (
+    <div className="boxStyle">
+      <h3>{DateAndTime.format(currentTime, props.formatString)}</h3>
+    </div>
+  );
+};
+
+export default Clock2;
+
+
+* slide-09
+
+import React, { useEffect, useState } from "react";
+
+const App03 = () => {
+  const [count, setCount] = useState (0);
+  const [name, setName] = useState ("아이유");
+
+   useEffect(() => {
+      console.log(`이름 : ${name}`);
+   }, [name]);
+
+   useEffect(() => {
+      console.log(`카운트 : ${count}`);
+   }, [count]);
+
+   return (
+    <div>
+      이름 변경 :
+      <input type="text" value={name} 
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>     
+                                setName(e.target.value)} />
+      <hr />
+      <button onClick={() => setCount(count + 1)}>카운트 1 증가</button>
+      <p>
+        {name} 님이 {count}번 클릭했습니다.
+      </p>
+    </div>  
+   );
+};
+
+export default App03;
+  
+
+* slide-13
+const familyMembers = [
+  { name:"홍길동", point: 10000, rel:"본인" },  
+  { name:"성춘향", point: 20000, rel:"처"  },
+  { name:"홍예지", point: 15000, rel:"딸" },
+  { name:"홍철수", point: 5000, rel:"아들" },
+  { name:"홍희수", point: 10000, rel:"아들" },
+];
+
+const initialPoint = 10000;
+const reducer = (totalPoint, member) => {
+   let  newTotalPoint = totalPoint + member.point;
+   return newTotalPoint;
+}
+
+const totalPoint = familyMembers.reduce(reducer, initialPoint);
+console.log(`가족 합계 포인트 : ${totalPoint}`)
+
+
+
+* slide-16
+import { produce } from "immer";
+
+export const TODO_ACTION = {
+  ADD: "addTodo",
+  DELETE: "deleteTodo",
+};
+
+export const TodoActionCreator = {
+  addTodo: (todo) => ({ type: TODO_ACTION.ADD, payload: { todo: todo } }),
+  deleteTodo: (id) => ({ type: TODO_ACTION.DELETE, payload: { id: id } }),
+};
+
+export const TodoReducer = (state, action) => {
+  switch (action.type) {
+    case TODO_ACTION.ADD:
+      return produce(state, (draft) => {
+        draft.push({ id: new Date().getTime(), todo: action.payload.todo });
+      });
+    case TODO_ACTION.DELETE:
+      let index = state.findIndex((item) => item.id === action.payload.id);
+      return produce(state, (draft) => {
+        draft.splice(index, 1);
+      });
+    default:
+      return state;
+  }
+};
+
+
+
+*slide-17
+import React, { useReducer, useState } from "react";
+import { TodoActionCreator, TodoReducer } from "./TodoReducer";
+
+const initialTodoList = [
+  { id: idNow, todo: "운동" },
+  { id: idNow + 1, todo: "독서" },
+  { id: idNow + 2, todo: "음악감상" },
+];
+
+const App04 = () => {
+  const [todoList, dispatchTodoList] = useReducer(TodoReducer, initialTodoList);
+  const [todo, setTodo] = useState("");
+  const addTodo = () => {
+    dispatchTodoList(TodoActionCreator.addTodo(todo));
+    setTodo("");
+  };
+  const deleteTodo = (id) => {
+    dispatchTodoList(TodoActionCreator.deleteTodo(id));
+  };
+ return (
+    <div style={{ padding: "20px" }}>
+      <input type="text" onChange={(e) => setTodo(e.target.value)} value={todo} />
+      <button onClick={addTodo}>할일 추가</button>
+      <ul>
+        {todoList.map((item) => (
+          <li key={item.id}>
+            {item.todo} &nbsp;&nbsp;
+            <button onClick={() => deleteTodo(item.id)}>삭제</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App04;
+
+
+* slide-22
+
+import { useRef, useState } from "react";
+
+const App05 = () => {
+  const [name, setName] = useState("홍길동");
+  const refTel = useRef("010-2222-2222");
+  return (
+    <div className="boxStyle">
+      <h2>상태 데이터</h2>
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+      <br />
+      <div> 상태(name) : {name}</div>
+      <hr />
+      <input type="text" onChange={(e) => (refTel.current = e.target.value)} />
+      <br />
+      <div> refTel 값 : {refTel.current}</div>
+    </div>
+  );
+};
+
+export default App05;
+
+
+* slide-23
+
+import React, { useRef } from "react";
+
+const App06 = () => {
+  const elName = useRef(null);
+
+  const goFirstInputElement = () => {
+    if (elName.current) elName.current.focus();
+  };
+
+  return (
+    <div className="boxStyle">
+      이름 : <input ref={elName} type="text" defaultValue="홍길동" />
+      <br />
+      전화 : <input type="text" defaultValue="010-2222-3333" />
+      <br />
+      주소 : <input type="text" defaultValue="서울" />
+      <br />
+      <button onClick={goFirstInputElement}>첫 번째 필드로 포커스 이동</button>
+    </div>
+  );
+};
+
+export default App06;
+
+
+* slide-25
+//App08.jsx 
+
+import { useState, useEffect } from "react";
+import DateAndTime from "date-and-time";
+
+const App08 = () => {
+  const [currentTime, setCurrentTime] = 
+      useState(DateAndTime.format(new Date(), "HH:mm:ss"));
+
+  useEffect(() => {
+    const handle = window.setInterval(() => {
+      setCurrentTime(DateAndTime.format(new Date(), "HH:mm:ss"));
+    }, 1000);
+
+    return () => {
+      window.clearInterval(handle);
+    };
+  }, []);
+
+  return (
+    <>
+      <h2>현재 시각</h2>
+      <hr />
+      <div>{currentTime}</div>
+    </>
+  );
+};
+
+export default App08;
+
+
+
+* slide-26
+import { useEffect, useState } from "react";
+import DateAndTime from "date-and-time";
+
+const TimeFormat = {
+  HHmmss : "HH:mm:ss",
+  HHmm : "HH:mm",
+  HHmmKOR :"HH시 mm분",
+  HHmmssKOR : "HH시 mm분 ss초",
+}
+
+const useClockTime = (interval, timeFormat) => {
+  const [currentTime, setCurrentTime] = 
+     useState(DateAndTime.format(new Date(), timeFormat));
+
+  useEffect(() => {
+    const handle = window.setInterval(() => {
+      setCurrentTime(DateAndTime.format(new Date(), timeFormat));
+    }, interval);
+
+    return () => {
+      window.clearInterval(handle);
+    };
+  }, []);
+
+  return currentTime;
+};
+
+export { useClockTime, TimeFormat };
+
+
+* slide-27
+import { TimeFormat, useClockTime } from "./hooks/useClockTime";
+
+//Custom Hook 적용 후
+const App09 = () => {
+  const currentTime = useClockTime(1000, TimeFormat.HHmmssKOR);
+
+  return (
+    <>
+      <h2>현재 시각</h2>
+      <hr />
+      <div>{currentTime}</div>
+    </>
+  );
+};
+
+export default App09;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

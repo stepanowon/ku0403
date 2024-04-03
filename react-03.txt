@@ -1,0 +1,252 @@
+* slide-04
+
+const App = () => {
+  let msg = "World";
+  return (
+    <div>
+      <h2>Hello {msg}!</h2>
+    </div>
+  );
+};
+
+* slide-05
+
+const App = () => {
+  let msg = "World";
+  return (
+    <div>
+      <h2>Hello {msg}!</h2>
+    </div>
+  );
+};
+
+* slide-06
+import React from "react";
+
+const App = () => {
+  let msg = "World";
+  const addResult = (x, y) => {
+    return (
+      <div>{x} + {y} = {x + y}</div>
+    );
+  };
+  return (
+    <div>
+      <h2>Hello {msg}!</h2>
+      <hr />
+      {addResult(4, 3)}
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-08
+......
+hr.dash-style {
+  background-color: #fff;
+  border-top: 2px dashed gray;
+}
+
+
+npm install bootstrap@5
+
+
+* slide-09
+......
+import 'bootstrap/dist/css/bootstrap.css'
+import './index.css'
+......
+------------------------
+......
+<div className="card card-body bg-light mb-3">{x} + {y} = {x+y}</div>
+......
+<div className="container">
+    <h1>Hello {msg}</h1>
+    <hr className="dash-style" />
+    { this.createString(4,5) }
+</div>
+......
+
+
+* slide-11
+let a = (
+    <div id="container">
+        <h1 className="test main">Hello World</h1>
+    </div>
+)
+
+
+* slide-16
+import React from "react";
+
+const CountryList = () => {
+  let list = [
+    { no: 1, country: "이집트", visited: false },
+    { no: 2, country: "일본", visited: true },
+    { no: 3, country: "피지", visited: false },
+    { no: 4, country: "콜롬비아", visited: false },
+  ];
+  
+  let countries = list.map((item, index) => {
+    return (
+      <li key={item.no} 
+         className={item.visited ? 
+          "list-group-item active" : "list-group-item"}>
+        {item.country}
+      </li>
+    );
+  });
+
+  return (
+    <ul className="list-group">
+        {countries}
+    </ul>
+  );
+};
+
+export default CountryList;
+
+
+* slide-17
+return (
+    <li key={item.no} 
+        className={item.visited ? 'list-group-item active' : 'list-group-item' }>
+        {item.country}
+    </li>
+)
+-------------------
+let countryClass = "";
+if (item.visited)   { 
+    countryClass = 'list-group-item active'; 
+} else { 
+    countryClass = 'list-group-item'; 
+}
+return (
+    <li key={item.no} className={countryClass}>
+        {item.country}
+    </li>
+)
+
+
+* slide-18
+......
+import CountryList from "./CountryList";
+
+const App = () => {
+  ......
+  return (
+    <div className="container">
+      ......
+      <CountryList />
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-21
+import React from "react";
+import CountryList from "./CountryList";
+
+const App = () => {
+  let list = [
+    { no: 1, country: "이집트", visited: false },
+    { no: 2, country: "일본", visited: true },
+    { no: 3, country: "피지", visited: false },
+    { no: 4, country: "콜롬비아", visited: false },
+  ];
+  ......
+  return (
+    <div className="container">
+      ......
+      <CountryList countries={list} />
+    </div>
+  );
+};
+
+export default App;
+
+
+* slide-22
+import React from "react";
+
+const CountryList = (props) => {
+  const list = props.countries;
+  let countries = list.map((item, index) => {
+    return (
+      <li key={item.no} className={item.visited ? "list-group-item active" : "list-group-item"}>
+        {item.country}
+      </li>
+    );
+  });
+
+  return <ul className="list-group">{countries}</ul>;
+};
+
+export default CountryList;
+
+
+* slide-23
+import React from "react";
+
+const CountryItem = (props) => {
+  let item = props.countryitem;
+  return (
+     <li className={item.visited ? "list-group-item active" : "list-group-item"}>
+        {item.country}
+     </li>
+  );
+};
+
+export default CountryItem;
+
+
+* slide-30
+
+import React, { useState } from "react";
+import CountryList from "./CountryList";
+
+const App = () => {
+  const [msg, setMsg] = useState ("World");  
+  const [list, setList] = useState([
+    { no: 1, country: "이집트", visited: false },
+    { no: 2, country: "일본", visited: true },
+    { no: 3, country: "피지", visited: false },
+    { no: 4, country: "콜롬비아", visited: false },
+  ]);
+
+  const addResult = (x: number, y: number) => {
+    return (
+      <div className="card card-body bg-light mb-3">
+        {x} + {y} = {x + y}
+      </div>
+    );
+  };
+
+  return (
+    <div className="container">
+      <h2>Hello {msg}!</h2>
+      <hr className="dash-style" />
+      {addResult(4, 3)}
+      <CountryList countries={list} />
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,579 @@
+* slide-03
+npm create vite router-test-app -- --template react-swc
+cd  router-test-app
+npm install bootstrap@5 react-router@6 react-router-dom@6
+
+
+* slide-05
+const Home = () => {
+  return (
+    <div className="card card-body">
+      <h2>Home</h2>
+    </div>
+  );
+};
+
+export default Home;
+
+
+* slide-06
+import { Link } from "react-router-dom";
+
+const Header = () => {
+  return (
+    <div className="card bg-light">
+      <div className="card-heading">
+        <h2 className="text-center m-3">Foxes And Fossils</h2>
+        <p>
+          <a href="http://foxesandfossils.com">http://foxesandfossils.com</a>
+        </p>
+        <div className="row">
+          <div className="col-12">
+            <Link className="btn btn-success menu" to="/">Home</Link>
+            <Link className="btn btn-success menu" to="/about">About</Link>
+            <Link className="btn btn-success menu" to="/members">Members</Link>
+            <Link className="btn btn-success menu" to="/songs">Songs</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+export default Header;
+
+
+* slide-07
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import Header from "./components/Header";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import SongList from "./pages/SongList";
+import Members from "./pages/Members";
+
+const App = () => {
+  return (
+    <Router>
+      <div className="container">
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/members" element={<Members />} />
+          <Route path="/songs" element={<SongList />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+};
+
+export default App;
+
+
+* slide-08
+body { margin: 0; padding: 0; font-family: sans-serif; }
+.container { 
+     text-align: center; margin-top:20px; 
+}
+.menu { width:25%; border-radius:0 !important; }
+-------------------------------------------------------------
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "bootstrap/dist/css/bootstrap.css";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+
+
+* slide-10
+......
+<Route path="/about" element={<About title={'여우와 늙다리들'} />} />
+......
+---------------------------------------------------------
+
+const About = (props) => {
+  return (
+    <div className="card card-body">
+      <h2>About {props.title}</h2>
+    </div>
+  );
+};
+
+export default About;
+
+
+* slide-12
+
+import { useState } from "react";
+......(중략)
+
+const App = () => {
+ const [members] = useState ([
+    { name: "Maggie Adams", photo: "photos/Mag.png" },
+    { name: "Sammie Purcell", photo: "photos/Sam.png" },
+    { name: "Tim Purcell", photo: "photos/Tim.png" },
+    { name: "Scott King", photo: "photos/King.png" },
+    { name: "Johnny Pike", photo: "photos/JPike.jpg" },
+    { name: "Toby Ruckert", photo: "photos/Toby.jpg" },
+  ]);
+
+  return (
+        <Router>
+              ......(중략)
+                    <Route path="/members" element={<Members members={members} />} />
+              ......(중략)
+        </Router>
+   );
+};
+
+export default App;
+
+
+
+* slide-13
+
+const Members = (props) => {
+  let imgstyle = { width: 90, height: 80 };
+  let list = props.members.map((member) => {
+    return (
+      <div key={member.name} className="col-6 col-md-4 col-lg-3">
+        <img src={member.photo} alt={member.name} className="img-thumbnail" style={imgstyle} /><br />
+        <h6>{member.name}</h6><br /><br />
+      </div>
+    );
+  });
+
+  return (
+    <div>
+      <h2 className="m-4">Members</h2>
+      <div className="container">
+        <div className="row">{list}</div>
+      </div>
+    </div>
+  );
+};
+
+export default Members;
+
+
+
+* slide-16
+
+[
+    { "id": 1, "title": "Fallin' for you", "musician": "Colbie callet", "youtube_link": "PABUl_EX_hw" },
+    { "id": 2, "title": "Can't hurry love", "musician": "The supremes", "youtube_link": "EJDPhjQft04" },
+    { "id": 3, "title": "Landslide", "musician": "Dixie chicks", "youtube_link": "V2N7gYom9-A" },
+    { "id": 4, "title": "Can't let go", "musician": "Linda ronstadt", "youtube_link": "P-EpGKXmoe4" },
+    { "id": 5, "title": "Doctor my eyes", "musician": "Jackson Browne", "youtube_link": "7JlFKS_1oZk" },
+    { "id": 6, "title": "We gotta get you a woman", "musician": "Todd Rundgren", "youtube_link": "EyUjbBViAGE" },
+    { "id": 7, "title": "Hip to my heart", "musician": "Band Perry", "youtube_link": "vpLCFnD9LFo" },
+    { "id": 8, "title": "Rolling in the deep", "musician": "Adele", "youtube_link": "EvK8pDK6IQU" },
+]
+
+
+
+* slide-17
+
+import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+......
+import SongDetail from './pages/SongDetail';
+
+const App = () => {
+    const [members] = useState([ ...... ]);
+
+    const [songs] = useState([
+       { id: 1, title: "Fallin' for you", musician: "Colbie callet", youtube_link: "PABUl_EX_hw" },
+       { id: 2, title: "Can't hurry love", musician: "The supremes", youtube_link: "EJDPhjQft04" },
+       { id: 3, title: "Landslide", musician: "Dixie chicks", youtube_link: "V2N7gYom9-A" },
+       { id: 4, title: "Can't let go", musician: "Linda ronstadt", youtube_link: "P-EpGKXmoe4" },
+       { id: 5, title: "Doctor my eyes", musician: "Jackson Browne", youtube_link: "7JlFKS_1oZk" },
+       { id: 6, title: "We gotta get you a woman", musician: "Todd Rundgren", youtube_link: "EyUjbBViAGE" },
+       { id: 7, title: "Hip to my heart", musician: "Band Perry", youtube_link: "vpLCFnD9LFo" },
+       { id: 8, title: "Rolling in the deep", musician: "Adele", youtube_link: "EvK8pDK6IQU" },
+    ]);
+
+    return (
+        <Router>
+            <div className="container">
+                <Header />
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/about" element={<About title={'여우와 늙다리들'} />} />
+                    <Route path="/members" element={<Members members={members} />} />
+                     <Route path="/songs" element={<SongList songs={songs} />} />
+                     <Route path="/songs/:id" element={<SongDetail songs={songs} />} />
+                </Routes>
+            </div>
+        </Router>
+     );
+};
+
+export default App;
+
+
+
+* slide-19
+
+import { Link } from "react-router-dom";
+
+const SongList = (props) => {
+  let list = props.songs.map((song) => {
+    return (
+      <li className="list-group-item" key={song.id}>
+        <Link to={`/songs/${song.id}`} style={{ textDecoration: "none" }}>
+          {song.title} ( {song.musician} )
+        </Link>
+      </li>
+    );
+  });
+
+  return (
+    <div>
+      <h2 className="m-5">Song List</h2>
+      <ul className="list-group">{list}</ul>
+    </div>
+  );
+};
+
+export default SongList;
+
+
+
+* slide-20
+import React, {useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+
+const SongDetail = (props) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [musician, setMusician] = useState("");
+  const [link, setLink] = useState("");
+  const YOUTUBE_LINK = "https://m.youtube.com/watch?v=";
+
+  useEffect(() => {
+    const song = 
+        props.songs.find((song) => song.id === parseInt(id ? id : "", 10));
+    if (song) {
+      setLink(song?.youtube_link ? YOUTUBE_LINK + song.youtube_link : "");
+      setTitle(song?.title ? song.title : "");
+      setMusician(song?.musician ? song?.musician : "");
+    } else {
+      navigate("/songs");
+    }
+  }, []);
+
+  return (
+    <div className="mt-5">
+      <h2>{title}</h2>
+      <p>Original Musician : {musician}</p>
+      <p>
+        <a href={link} target="new">
+          View Youtube
+        </a>
+      </p>
+      <Link to="/songs">Return SongList</Link>
+    </div>
+  );
+};
+
+export default SongDetail;
+
+
+
+* slide-25
+npm install react-youtube
+--------------------------------------------------------
+
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import Youtube from "react-youtube";
+
+const Player = (props) => {
+  const params = useParams();
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [youtubeLink, setYoutubeLink] = useState("");
+
+  useEffect(() => {
+    const id = params.id ? parseInt(params.id, 10) : 0;
+    const song = props.songs.find((song) => song.id === id);
+    if (song) {
+      setTitle(song?.title ? song.title : "");
+      setYoutubeLink(song?.youtube_link ? song.youtube_link : "");
+    } else {
+      navigate("/songs");
+    }
+  });
+
+  return (
+    <div className="modal">
+      <div className="box">
+        <div className="heading">
+          <Link className="menu" to="/songs">
+            <span className="float-start badge bg-secondary pointer">X</span>
+          </Link>
+          <span className="title">&nbsp;&nbsp;&nbsp;{title}</span>
+        </div>
+        <div className="player">
+          <div>
+            <Youtube videoId={youtubeLink} opts={{ width: "320", height: "240", playerVars: { autoplay: 1 } }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Player;
+
+
+
+* slide-27
+
+import { Link, Outlet } from "react-router-dom";
+
+const SongList = (props) => {
+  let list = props.songs.map((song) => {
+    return (
+      <li className="list-group-item" key={song.id}>
+        <Link to={`/songs/${song.id}`} style={{ textDecoration: "none" }}>
+          {song.title} ( {song.musician} )
+          <span className="float-end badge bg-secondary">
+            <i className="fa fa-play"></i>
+          </span>
+        </Link>
+      </li>
+    );
+  });
+  return (
+    <div>
+      <h2 className="m-5">Song List</h2>
+      <ul className="list-group">{list}</ul>
+      <Outlet />
+    </div>
+  );
+};
+export default SongList;
+
+  
+* slide-28
+
+/* font-awesome이 제공하는 아이콘을 사용하기 위한 참조 */
+@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+
+......(기존 스타일 생략)
+
+/* 모달을 위한 스타일 추가 */
+.modal { display: block; position: fixed; z-index: 1; 
+    left: 0; top: 0; width: 100%; height: 100%;
+    overflow: auto; background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); }
+.box { background-color: white; margin:100px auto;
+    max-width: 330px; min-width: 100px; min-height: 250px;
+    font: 12px "verdana";
+    padding: 5px 5px 5px 5px;  }
+.box div { padding: 0;  display: block;  margin: 5px 0 0 0; }
+.box .heading { background: #33A17F; font-weight: 300;
+    text-align: left; color: #fff;
+    margin:0px; padding: 10px 10px 10px 10px; min-width:200px;
+    max-width:360px; }
+.box .player { background:white; }
+.pointer { cursor:pointer; }
+.play-button { width:15px; height:15px; }
+.play-button-disabled { opacity:0.3 }
+
+
+<Route path="/songs" element={ <SongList songs={songs} /> }>
+   <Route path=":id" element={ <Player songs={songs} /> } />
+</Route>
+
+
+
+* slide-31
+
+// src/pages/songs/Index.jsx 추가
+import React from 'react';
+
+const Index = () => {
+    return (
+        <>
+            <hr />
+            <h3>현재 재생중인 곳 없음</h3>
+        </>
+    );
+};
+
+export default Index;
+-----------------------------------------
+
+import SongIndex from './pages/songs/Index'
+......
+<Route path="/songs" element={ <SongList songs={songs} /> }>
+   <Route index element={ <SongIndex /> } />
+   <Route path=":id" element={ <Player songs={songs} /> } />
+</Route>
+
+
+
+* slide-35
+
+import { Link, Outlet, useMatch } from "react-router-dom";
+
+const SongList = (props) => {
+  const pathMatch = useMatch("/songs/:id");
+  let param_id = pathMatch.params.id ? parseInt(pathMatch.params.id, 10) : -1;
+
+  let list = props.songs.map((song) => {
+    let cn = "list-group-item";
+    cn += param_id === song.id ? " list-group-item-secondary" : "";
+    return (
+      <li className={cn} key={song.id}>
+        <Link to={`/songs/${song.id}`} style={{ textDecoration: "none" }}>
+          {song.title} ( {song.musician} )
+          <span className="float-end badge bg-secondary">
+            <i className="fa fa-play"></i>
+          </span>
+        </Link>
+      </li>
+    );
+  });
+
+  return (
+    <div>
+      <h2 className="m-5">Song List</h2>
+      <ul className="list-group">{list}</ul>
+      <Outlet />
+    </div>
+  );
+};
+
+export default SongList;
+
+
+
+* slide-38
+
+import { useNavigate } from "react-router";
+
+const Members = (props) => {
+  const navigate = useNavigate();
+  const goHome = () => {
+    if (window.confirm('정말로 홈으로 이동할까요?')) {
+      navigate('/', { state: { from: '/members' } });
+    }
+  }
+
+  let imgstyle = { width: 90, height: 80 };
+  let list = props.members.map((member) => {
+    return (
+      <div key={member.name} className="col-6 col-md-4 col-lg-3">
+        <img src={member.photo} alt={member.name} 
+             className="img-thumbnail" style={imgstyle} /><br />
+        <h6>{member.name}</h6><br /><br />
+      </div>
+    );
+  });
+
+  return (
+    <div>
+      <h2 className="m-4">Members</h2>
+      <div className="container">
+        <div className="row">{list}</div>
+      </div>
+      <button className="btn btn-secondary" onClick={goHome}>
+          Go Home
+      </button>
+    </div>
+  );
+};
+
+export default Members;
+
+
+
+* slide-39
+
+import React from "react";
+import { useLocation } from "react-router";
+
+const Home = () => {
+  const location = useLocation();
+  const state = location.state;
+  const from = state ? state.from : "";
+
+  return (
+    <div className="card card-body">
+      <h2>Home</h2>
+      {from !== "" ? <h4>state.from : {from}</h4> : ""}
+    </div>
+  );
+};
+
+export default Home;
+
+
+
+* slide-43
+npm run build
+npx serve dist --listen 3000
+
+
+
+* slide-44
+npx serve dist --listen 3000  -s
+
+
+
+* slide-46
+import { useLocation } from "react-router";
+
+const NotFound = () => {
+  const location = useLocation();
+  return (
+    <div className="m-3">
+      <h3>존재하지 않는 경로</h3>
+      <p>요청 경로 : {location.pathname}</p>
+    </div>
+  );
+};
+
+export default NotFound;
+
+
+
+* slide-47
+
+<Route path="*" element={ <NotFound /> } />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
