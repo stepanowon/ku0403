@@ -185,28 +185,28 @@ export default App5;
 
 
 * slide-14
-npm create vite contacts-client  --  --template react-swc
-cd contacts-client 
+npm create vite todolist-client  --  --template react-swc
+cd todolist-client 
 npm install
-npm install axios react-router react-router-dom
-
+npm install axios react-router react-router-dom prop-types
 
 
 * slide-15
 body { margin:20px; }
 
 
-* slide-16
+* slide-16~17
 import axios from "axios";
 import { useState } from "react";
 
 axios.defaults.baseURL = "http://localhost:8080";
-const useFetch = (url, params) => {
+
+const useFetch = (params) => {
     const [response, setResponse] = useState();
     const [error, setError] = useState();
     const [isLoading, setIsLoading] = useState(false);
   
-    const fetchData = async () => {
+    const fetchData = async (url) => {
       setResponse(undefined);
       setError(undefined);
       setIsLoading(true);
@@ -219,16 +219,15 @@ const useFetch = (url, params) => {
         setIsLoading(false);
       }
     };
-  
     return { response, error, isLoading, fetchData };
 };
 
-const usePost = (url, params) => {
+const usePost = (params) => {
     const [response, setResponse] = useState();
     const [error, setError] = useState();
     const [isProcessing, setIsProcessing] = useState(false);
-  
-    const postData = async (data, callback) => {
+
+    const postData = async (url, data, callback) => {
       setResponse(undefined);
       setError(undefined);
       setIsProcessing(true);
@@ -246,67 +245,136 @@ const usePost = (url, params) => {
         }, 3000);
       }
     };
-  
     return { response, error, isProcessing, postData };
 };
 
-export { useFetch, usePost };
+const usePut = (params) => {
+    const [response, setResponse] = useState();
+    const [error, setError] = useState();
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const putData = async (url, data, callback) => {
+      setResponse(undefined);
+      setError(undefined);
+      setIsProcessing(true);
+      try {
+        const result = await axios.put(url, data, params);
+        setResponse(result);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsProcessing(false);
+        callback();
+        setTimeout(()=>{
+          setResponse(undefined);
+          setError(undefined);
+        }, 3000);
+      }
+    };
+    return { response, error, isProcessing, putData };
+};
+
+const useDelete = (params) => {
+    const [response, setResponse] = useState();
+    const [error, setError] = useState();
+    const [isProcessing, setIsProcessing] = useState(false);
+ 
+    const deleteData = async (url, callback) => {
+      setResponse(undefined);
+      setError(undefined);
+      setIsProcessing(true);
+      try {
+        const result = await axios.delete(url, params);
+        setResponse(result);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsProcessing(false);
+        callback();
+        setTimeout(()=>{
+          setResponse(undefined);
+          setError(undefined);
+        }, 3000);
+      }
+    };
+    return { response, error, isProcessing, deleteData };
+};
+
+export { useFetch, usePost, usePut, useDelete };
 
 
 
-* slide-19
-import ContactList from "./ContactList"
-import InputContact from "./InputContact"
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+* slide-18
+import PropTypes from 'prop-types';
+import { useDelete, usePut } from './hooks/useAxios';
 
-const App = () => {
-  return (
-    <div>
-      <Router>
-        <h2> Custom Hook을 이용한 HTTP 요청 예제</h2>
-        <hr />
-        <Link to="/">연락처 목록</Link>&nbsp;
-        <Link to="/add">연락처 추가</Link>
-        <hr />
-        <Routes>
-          <Route path="/" element={<ContactList />} />
-          <Route path="/add" element={<InputContact />} />
-        </Routes>
-      </Router>
-    </div>
-  )
-}
+const TodoItem = ({ todoItem, fetchData, owner }) => {
+    const { deleteData } =useDelete({ timeout: 10000 });
+    const { putData } =usePut({ timeout: 10000 });
 
-export default App
+    const toggleItem = (id) => {
+        putData(`/todolist/${owner}/${id}/completed`, { }, ()=> {
+            fetchData(`/todolist/${owner}`);
+        })
+    }
+    
+    const deleteItem = (id) => {
+        deleteData(`/todolist/${owner}/${id}`, ()=> {
+            fetchData(`/todolist/${owner}`);
+        })
+    }
+
+    return (
+        <li key={todoItem.id}>
+            {todoItem.todo} : {todoItem.desc}{" "}
+            <button onClick={()=>toggleItem(todoItem.id)}>
+                 {todoItem.completed ? "완료" : "미완료"}
+            </button>{" "}
+            <button onClick={()=>deleteItem(todoItem.id)}>
+               삭제</button>
+        </li>
+    );
+};
+
+TodoItem.propTypes = {
+    todoItem: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        todo: PropTypes.string.isRequired,
+        desc: PropTypes.string.isRequired,
+        completed: PropTypes.bool.isRequired,
+    }),
+    owner: PropTypes.string.isRequired,
+    fetchData: PropTypes.func.isRequired,
+};
+
+export default TodoItem;
 
 
 
 * slide-19
 import { useEffect } from "react";
 import { useFetch } from "./hooks/useAxios";
+import PropTypes from 'prop-types';
+import TodoItem from "./TodoItem";
 
-const ContactList = () => {
+const TodoList = ({ owner }) => {
 
-  const { response, isLoading, error, fetchData } = useFetch(
-    `/contacts`,
-    { timeout: 10000 }
-  );
+  const { response, isLoading, error, fetchData } = useFetch({ timeout: 10000 });
 
   useEffect(()=>{
-    fetchData();
+    fetchData(`/todolist/${owner}`);
   }, [])
-  
+
   return (
     <div>
       <ul>
         {error ? (
           <h3>에러 발생 : {error.message}</h3>
-        ) : response ? (
-          response.data.contacts.map((item) => {
+        ) : response && response.data.status === "success" ? (
+          response.data.todolist.map((item) => {
             return (
-              <li key={item.no}>
-                {item.name} : {item.tel} : {item.address}{" "}
-              </li>
+                <TodoItem key={item.id} todoItem={item} 
+                      fetchData={fetchData} owner={owner} />
             );
           })
         ) : (
@@ -318,51 +386,52 @@ const ContactList = () => {
   );
 };
 
-export default ContactList;
+TodoList.propTypes = {
+    owner: PropTypes.string.isRequired,    
+};
+export default TodoList;
+
 
 
 
 * slide-20
+
 import { useState } from "react";
 import { usePost } from "./hooks/useAxios";
 import { useNavigate } from "react-router";
+import PropTypes from 'prop-types';
 
-const InputContact = () => {
-  const [name, setName] = useState("");
-  const [tel, setTel] = useState("");
-  const [address, setAddress] = useState("");
+const AddTodo = ({ owner }) => {
+  const [todo, setTodo] = useState("");
+  const [desc, setDesc] = useState("");
   const navigate=  useNavigate();
 
-  const { response, isProcessing, error, postData } = usePost(
-    "/contacts", 
-    { timeout: 10000 }
-  );
+  const { response, isProcessing, error, postData } = 
+     usePost({ timeout: 10000 });
 
- const addContactHandler = () => {
-    if (!name || name.length < 2 || !tel || !address) {
-      alert("name은 두글자 이상, tel, address 를 반드시 입력해주세요.");
+  const addTodoHandler = () => {
+    if (!todo || todo.length < 2 || !desc) {
+      alert("할일(todo)은 두글자 이상, " + 
+          "설명(desc)는 반드시 입력해주세요.");
       return;
     }
-    const data = { name, tel, address };
-    postData(data, ()=> {
+    const data = { todo, desc };
+    postData(`/todolist/${owner}`, data, ()=> {
       navigate("/");
     });
   };
-  
+
   return (
     <div>
-      이름 :{" "}
-      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+      할일 :{" "}
+      <input type="text" value={todo} onChange={(e)=>setTodo(e.target.value)} />
       <br />
-      전화 :{" "}
-      <input type="text" value={tel} onChange={(e) => setTel(e.target.value)} />
-      <br />
-      주소 :{" "}
-      <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
+      설명 :{" "}
+      <input type="text" value={desc} onChange={(e)=>setDesc(e.target.value)} />
       <br /><br />
-      <button onClick={addContactHandler}>연락처 추가</button>
+      <button onClick={addTodoHandler}>할일 추가</button>
       <br />
-      {error ? (
+      { error ? (
         <h3>에러 발생 : {error.message}</h3>
       ) : response ? (
         <h3>{response.data.message}</h3>
@@ -374,34 +443,41 @@ const InputContact = () => {
   );
 };
 
-export default InputContact;
+AddTodo.propTypes = {
+    owner: PropTypes.string.isRequired,    
+};
 
-  
-
-  
-
-
+export default AddTodo;
 
 
 
+* slide-21
+import TodoList from "./TodoList"
+import AddTodo from "./AddTodo"
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useState } from "react";
 
+const App = () => {
+  const [owner, setOwner] = useState("mrlee");
+  return (
+    <div>
+      <Router>
+        <h2> Custom Hook을 이용한 HTTP 요청 예제</h2><hr />
+        <div>
+          사용자 변경 : <input type="text" value={owner} onChange={(e)=>setOwner(e.target.value)} />
+        </div><hr />
+        <Link to="/">할일 목록</Link>&nbsp;
+        <Link to="/add">할일 추가</Link><hr />
+        <Routes>
+          <Route path="/" element={<TodoList owner={owner} />} />
+          <Route path="/add" element={<AddTodo owner={owner} />} />
+        </Routes>
+      </Router>
+    </div>
+  )
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default App
 
 
 
